@@ -5,7 +5,6 @@ import numpy as np
 import random
 import torch
 import torch.nn as nn
-from fcd_torch import FCD as FCDMetric
 from torch_geometric.graphgym.checkpoint import load_ckpt, save_ckpt, clean_ckpt
 from torch_geometric.graphgym.config import cfg
 from torch_geometric.graphgym.loss import compute_loss

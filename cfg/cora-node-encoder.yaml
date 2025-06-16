@@ -28,6 +28,7 @@ dataset:
   add_virtual_node_edge: False
   subgraph: False
   aug_edge: False
+  split_index: 0
   split: [0.6, 0.2, 0.2]
 train:
   mode: pretrain_encoder_inductive

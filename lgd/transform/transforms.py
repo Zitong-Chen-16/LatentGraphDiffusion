@@ -287,20 +287,20 @@ def no_virtual_node_edge(data, format):
 
 
 def pretransform_pe(data, add_virtual_node=False):
-    pestat_node = []
+    pestat_node_list = []
     pestat_edge = []
     N = data.num_nodes - 1 if add_virtual_node else data.num_nodes
     for pename in ['LapPE', 'EquivStableLapPE', 'SignNet', 'RWSE', 'HKdiagSE', 'HKfullPE', 'ElstaticSE', 'rrwp']:
         pestat_var = f"pestat_{pename}"
         if data.get(pestat_var, None) is not None:
-            pestat_node.append(getattr(data, pestat_var))
+            pestat_node_list.append(getattr(data, pestat_var))
     if data.get('rrwp', None) is not None:
-        pestat_node.append(data.rrwp)
-    if pestat_node:
-        pestat_node = torch.cat(pestat_node, dim=-1)
+        pestat_node_list.append(data.rrwp)
+    if pestat_node_list:
+        pestat_node = torch.cat(pestat_node_list, dim=-1)
         data.pestat_node = pestat_node
     if add_virtual_node:
-        if pestat_node:
+        if pestat_node_list:
             data.pestat_node = torch.cat([data.pestat_node, torch.zeros([1, pestat_node.shape[1]], dtype=torch.float)], dim=0)
 
         for pename in ['rrwp_edge']:

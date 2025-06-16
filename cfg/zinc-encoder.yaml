@@ -5,7 +5,7 @@ metric_agg: argmin
 tensorboard_each_run: False  # Log to Tensorboard each run
 #accelerator: "cuda:3"
 #device: "cuda:3"
-accelerator: "cuda:0"
+accelerator: "cuda:1"
 mlflow:
   use: False
   project: Exp
@@ -102,7 +102,7 @@ encoder:
   pool_vn: False
   # post_pool: True
   prefix_type: add_virtual
-  label_embed_type: for first stage model only
+  label_embed_type: add_virtual # for first stage model only
   num_task: 1
   task_type: regression
   # num_classes: only for classification
