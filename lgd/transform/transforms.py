@@ -131,34 +131,12 @@ def add_virtual_node_edge(data, format):
                        sparse_sizes=(N + 1, N + 1)).coalesce().to_dense()
     data.original_edge = adj.reshape(-1).bool()
 
-    # pestat_node = []
-    # pestat_edge = []
-    # for pename in ['LapPE', 'EquivStableLapPE', 'SignNet', 'RWSE', 'HKdiagSE', 'HKfullPE', 'ElstaticSE', 'rrwp']:
-    #     pestat_var = f"pestat_{pename}"
-    #     if data.get(pestat_var, None) is not None:
-    #         pestat_node.append(getattr(data, pestat_var))
-    # if data.get('rrwp', None) is not None:
-    #     pestat_node.append(data.rrwp)
-    # if pestat_node:
-    #     pestat_node = torch.cat(pestat_node, dim=-1)
-    #     pestat_node = torch.cat([pestat_node, torch.zeros([1, pestat_node.shape[1]], dtype=torch.float)], dim=0)
-    #     data.pestat_node = pestat_node
-    #
-    # for pename in ['rrwp_edge', 'RD_val']:
-    #     if data.get(pename, None) is not None:
-    #         pestat_edge.append(getattr(data, pename))
-    # if pestat_edge:
-    #     pestat_edge = torch.cat(pestat_edge, dim=-1)
-    #     pestat_edge_padded = torch.zeros([(N+1), (N+1), pestat_edge.shape[-1]], dtype=torch.float)
-    #     pestat_edge_padded[:N, :N] = pestat_edge.reshape(N, N, -1)
-    #     data.pestat_edge = pestat_edge_padded.reshape((N+1)*(N+1), -1)
-
     if data.get('log_deg', None) is not None:
         data.log_deg = torch.cat([data.log_deg, torch.log(torch.tensor([N], dtype=torch.float))], dim=0)
     if data.get('deg', None) is not None:
         data.log_deg = torch.cat([data.deg, torch.tensor([N], dtype=torch.long)], dim=0)
 
-    if format == 'PyG-ZINC':
+    if format == 'PyG-ZINC' or format == 'PyG-Evo_100':
         data.x_original = data.x + 1  # TODO: note that this is different across different datasets, whether dimension or +1
         # print(data.x, data.edge_attr)
         A = SparseTensor(row=data.edge_index[0],

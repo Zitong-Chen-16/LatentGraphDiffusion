@@ -6,6 +6,7 @@ from functools import partial
 import os
 import math
 import numpy as np
+from pathlib import Path
 import torch
 import torch_geometric.transforms as T
 from numpy.random import default_rng
@@ -23,6 +24,7 @@ from .dataset.aqsol_molecules import AQSOL
 from .dataset.coco_superpixels import COCOSuperpixels
 from .dataset.malnet_tiny import MalNetTiny
 from .dataset.voc_superpixels import VOCSuperpixels
+from .dataset.evolution_dataset import EvolutionDataset
 from .split_generator import (prepare_splits, set_dataset_splits)
 from lgd.transform.posenc_stats import compute_posenc_stats
 from lgd.transform.transforms import (pre_transform_in_memory, generate_splits,
@@ -114,7 +116,6 @@ def load_dataset_master(format, name, dataset_dir):
         if os.path.exists(processed_path):
             dataset = torch.load(processed_path, map_location="cpu")
             return dataset
-        print(dataset_dir)
 
         if pyg_dataset_id == 'GNNBenchmarkDataset':
             dataset = preformat_GNNBenchmarkDataset(dataset_dir, name)
@@ -175,6 +176,8 @@ def load_dataset_master(format, name, dataset_dir):
             dataset = preformat_COCOSuperpixels(dataset_dir, name,
                                                 cfg.dataset.slic_compactness)
 
+        elif pyg_dataset_id == 'Evo_100':
+            dataset = preformat_EvolutionDataset(dataset_dir, feature_set=name)
 
         elif pyg_dataset_id == 'WikipediaNetwork':
             if name == 'crocodile':
@@ -203,7 +206,7 @@ def load_dataset_master(format, name, dataset_dir):
             dataset = torch.load(processed_path, map_location="cpu")
             return dataset
         dataset = load_pyg(name, dataset_dir)
-
+        
     elif format == 'OGB':
         processed_path = dataset_dir + '/' + name + '/processed.pt'
         if os.path.exists(processed_path):
@@ -483,7 +486,37 @@ def preformat_MalNetTiny(dataset_dir, feature_set):
 
     return dataset
 
+def preformat_EvolutionDataset(dataset_dir, feature_set):
+    """Load and preformat EvolutionDataset.
 
+    Args:
+        dataset_dir: path where to store the cached dataset
+        name: name of the specific EvolutionDataset
+    Returns:
+        PyG dataset object
+    """
+    if feature_set in ['none', 'Constant']:
+        tf = T.Constant() # dummy features of node index
+    elif feature_set == 'OneHotDegree':
+        tf = T.OneHotDegree()
+    elif feature_set == 'LocalDegreeProfile':
+        tf = T.LocalDegreeProfile()
+    elif feature_set == 'Degree+LaplacianPE':
+        tf = T.Compose([T.LocalDegreeProfile(), pretransform_pe])
+    else:
+        raise ValueError(f"Unexpected transform function: {feature_set}")
+
+    dataset = EvolutionDataset(Path(dataset_dir))
+    dataset.name = 'EvolutionDataset'
+    logging.info(f'Computing "{feature_set}" node features for EvolutionDataset.')
+    # dataset.transform = tf 
+
+    split_dict = dataset.get_idx_split()
+    dataset.split_idxs = [split_dict['train'],
+                          split_dict['valid'],
+                          split_dict['test']]
+
+    return dataset
 def preformat_OGB_Graph(dataset_dir, name):
     """Load and preformat OGB Graph Property Prediction loader.
 

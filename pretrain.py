@@ -266,7 +266,7 @@ if __name__ == '__main__':
         seed_everything(cfg.seed)
         auto_select_device()
         # TODO: debug loader and dataset
-        # dataset = load_dataset_master(cfg.dataset.format, cfg.dataset.name, cfg.dataset.dataset_dir)
+        # dataset = load_dataset_master(cfg.dataset.format, cfg.dataset.name, cfg.dataset.dir)
         if cfg.pretrained.dir:
             cfg = load_pretrained_model_cfg(cfg)
         loaders = create_loader()

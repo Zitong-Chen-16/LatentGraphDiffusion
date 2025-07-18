@@ -14,10 +14,10 @@ def set_cfg_wandb(cfg):
     cfg.wandb.use = False
 
     # Wandb entity name, should exist beforehand
-    cfg.wandb.entity = "gtransformers"
+    cfg.wandb.entity = "treenet"
 
     # Wandb project name, will be created in your team if doesn't exist already
-    cfg.wandb.project = "gtblueprint"
+    cfg.wandb.project = "treenet"
 
     # Optional run name
     cfg.wandb.name = ""

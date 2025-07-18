@@ -10,7 +10,7 @@ from torch_geometric.data import (InMemoryDataset, Data, download_url,
 
 
 class VOCSuperpixels(InMemoryDataset):
-    r"""The VOCSuperpixels dataset which contains image superpixels and a semantic segmentation label
+    """The VOCSuperpixels dataset which contains image superpixels and a semantic segmentation label
     for each node superpixel.
     
     Construction and Preparation:
